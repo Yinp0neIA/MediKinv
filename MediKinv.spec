@@ -1,12 +1,35 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-
 a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[('assets', 'assets'), ('utils', 'utils'), ('models', 'models'), ('config', 'config'), ('views', 'views')],
-    hiddenimports=[],
+    datas=[
+        ('assets', 'assets'),  # Esto ya incluye tu logo.ico y todas las imágenes
+        ('utils', 'utils'),
+        ('models', 'models'),
+        ('config', 'config'),
+        ('views', 'views'),
+    ],
+    hiddenimports=[
+        'customtkinter',
+        'PIL',
+        'PIL.Image',
+        'PIL.ImageTk',
+        'openpyxl',
+        'openpyxl.styles',
+        'dotenv',
+        'python-dotenv',
+        'calendar',
+        'assets.styles.themes',
+        'utils.icon_manager',
+        'models.medicamento',
+        'models.movimiento',
+        'config.database',
+        'views.login_view',
+        'views.area_select_view',
+        'views.sistema_view',
+    ],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -14,6 +37,7 @@ a = Analysis(
     noarchive=False,
     optimize=0,
 )
+
 pyz = PYZ(a.pure)
 
 exe = EXE(
@@ -29,7 +53,7 @@ exe = EXE(
     upx=True,
     upx_exclude=[],
     runtime_tmpdir=None,
-    console=False,
+    console=False,  # Cambia a True solo para debugging
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
