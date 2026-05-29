@@ -1,43 +1,24 @@
-# Sistema de Importación y Gestión de Registros
+# Nombre del proyecto
 
-## Contenido del repositorio
+## Carpeta dist
 
-Este repositorio contiene los siguientes elementos:
+En la carpeta `dist` se encuentra el build del proyecto. Es solo un archivo `.exe` (ejecutable). No necesitas instalar nada, solo ejecutarlo. Puedes ejecutarlo sin tener nada adicional instalado.
 
-### Carpeta `/insert`
-En esta carpeta encontrarás:
-- Un **script** para importar registros existentes
-- Un archivo **Excel** con el formato correspondiente para poder analizar los datos y hacer la inserción correctamente
+**Importante:** El ejecutable no funcionara si no tienes instalado el sistema gestor de base de datos.
 
-## Documentación incluida
+## Carpeta insert
 
-El repositorio incluye **2 documentos**:
+En la carpeta `insert` viene:
+- Un script para importar ciertos registros existentes
+- Un archivo Excel con el formato correspondiente para poder analizarlo y hacer la insercion
 
-1. **Manual de usuario**
-   Explica cómo funciona el programa paso a paso.
+## Documentacion
 
-2. **Documentación de la base de datos**
-   Describe:
-   - El código para la inserción de la base
-   - Las tablas que componen la base de datos
+El repositorio incluye 2 documentos:
 
-## Tecnología utilizada
+1. **Manual de usuario** - Explica como funciona el programa
+2. **Documentacion de la base de datos** - Explica cual es el codigo para la insercion de la base y las tablas
 
-- **Sistema gestor de base de datos**: SQL Server Management Studio 22
+## Sistema gestor de base de datos
 
-## Instrucciones rápidas
-
-1. Clona este repositorio
-2. Revisa la carpeta `/insert`
-3. Utiliza el archivo Excel como plantilla para preparar tus datos
-4. Ejecuta el script de importación
-5. Consulta los documentos para más detalles de uso y estructura
-
-## Requisitos
-
-- SQL Server Management Studio 22 o superior
-- Acceso a la base de datos correspondiente
-
-## Soporte
-
-Para cualquier duda, revisa la documentación adjunta o abre un issue en este repositorio.
+El sistema gestor de base de datos utilizado fue SQL Server Management Studio 22
