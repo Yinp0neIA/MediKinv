@@ -1,5 +1,6 @@
 from config.database import Database
 
+
 class Medicamento:
     """Modelo único de Medicamento para ambas áreas"""
 
@@ -70,6 +71,7 @@ class Medicamento:
 
     @staticmethod
     def obtener_por_id(medicamento_id):
+        """Obtiene un medicamento buscando en ambas áreas"""
         # Buscar en farmacia
         query_farma = """
             SELECT i.id_inventario, i.id_catalogo, i.ubicacion, i.caducidad,
@@ -137,9 +139,52 @@ class Medicamento:
         return None
 
     @staticmethod
+    def obtener_por_id_y_area(medicamento_id, area_id):
+        """Obtiene un medicamento específico de un área específica"""
+        try:
+            tabla = "inventario_farmacia" if area_id == 1 else "inventario_odontologia"
+            query = f"""
+                SELECT i.id_inventario, i.id_catalogo, i.ubicacion, i.caducidad,
+                       i.stock, i.es_donacion, i.donante, i.observaciones,
+                       c.nombre, c.forma_farmaceutica, c.concentracion
+                FROM {tabla} i
+                JOIN catalogo_medicamentos c ON i.id_catalogo = c.id_catalogo
+                WHERE i.id_inventario = ?
+            """
+            result = Database.execute_query(query, (medicamento_id,))
+            if result:
+                row = result[0]
+                forma = row[9] or ""
+                conc = row[10] or ""
+                presentacion = f"{forma} {conc}".strip()
+                if not presentacion:
+                    presentacion = "---"
+                return {
+                    'id_medicamento': row[0],
+                    'id_catalogo': row[1],
+                    'ubicacion': row[2] or "",
+                    'caducidad': row[3],
+                    'stock': row[4],
+                    'es_donacion': row[5],
+                    'donante': row[6] or "",
+                    'observaciones': row[7] or "",
+                    'nombre': row[8],
+                    'presentacion': presentacion,
+                    'forma_farmaceutica': forma,
+                    'concentracion': conc,
+                    'area_id': area_id
+                }
+            return None
+        except Exception as e:
+            print(f"Error en obtener_por_id_y_area: {e}")
+            return None
+
+    @staticmethod
     def _separar_presentacion(presentacion_str):
         """Separa la presentación en forma farmacéutica y concentración.
            Toma la primera palabra como forma y el resto como concentración."""
+        if not presentacion_str:
+            return "", ""
         partes = presentacion_str.strip().split(maxsplit=1)
         if len(partes) == 1:
             return partes[0], ""
@@ -162,7 +207,7 @@ class Medicamento:
         if result:
             id_catalogo = result[0][0]
         else:
-            # Si no existe, se crea (esto puede ser útil en otras partes, pero en el formulario principal se evita)
+            # Si no existe, se crea
             insert_catalogo = """
                 INSERT INTO catalogo_medicamentos (nombre, forma_farmaceutica, concentracion)
                 VALUES (?, ?, ?)
@@ -186,7 +231,7 @@ class Medicamento:
 
     @staticmethod
     def crear_desde_catalogo(area_id, id_catalogo, ubicacion, caducidad,
-                              stock, es_donacion, donante, observaciones):
+                             stock, es_donacion, donante, observaciones):
         """Agrega un medicamento al inventario usando un id_catalogo existente.
            No crea nuevas entradas en el catálogo."""
         tabla = "inventario_farmacia" if area_id == 1 else "inventario_odontologia"
@@ -226,6 +271,28 @@ class Medicamento:
         return Database.execute_non_query(query, (
             ubicacion, caducidad, stock, es_donacion, donante, observaciones, id_medicamento
         ))
+
+    @staticmethod
+    def actualizar_stock(medicamento_id, nuevo_stock):
+        """Actualiza el stock de un medicamento"""
+        try:
+            # Primero obtener el medicamento para saber en qué tabla está
+            med = Medicamento.obtener_por_id(medicamento_id)
+            if not med:
+                print(f"Medicamento {medicamento_id} no encontrado")
+                return False
+
+            tabla = "inventario_farmacia" if med['area_id'] == 1 else "inventario_odontologia"
+            query = f"""
+                UPDATE {tabla} 
+                SET stock = ? 
+                WHERE id_inventario = ?
+            """
+            result = Database.execute_non_query(query, (nuevo_stock, medicamento_id))
+            return result > 0
+        except Exception as e:
+            print(f"Error actualizando stock: {e}")
+            return False
 
     @staticmethod
     def eliminar(id_medicamento):
